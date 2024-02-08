@@ -1,0 +1,48 @@
+<html>
+
+<head>
+  <title>
+    대한민국 대학교 리스트
+  </title>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <link rel="stylesheet" href="style.css?after" />
+  <py-env>
+    - pandas
+    - seaborn
+    - matplotlib
+  </py-env>
+</head>
+
+<body>
+    <div id="table"></div>
+    <py-script>
+  from pyodide.http import open_url
+  import pandas as pd
+  from urllib.parse import parse_qs
+  from js import window
+  result = pd.read_csv(open_url('https://raw.githubusercontent.com/janyoungjin/scholarshipData/main/result.csv'))
+  query_string = window.location.search#사이트 주소를 가져온다
+  if query_string:
+      parsed_qs = parse_qs(query_string.lstrip('?'))
+      for key, values in parsed_qs.items():
+          value = values[0] 
+          if key == 'city1':
+              result = result[result['시'].str.contains(value)]
+          elif key == 'city2':
+            if value!="전체":
+              result = result[result['지역'].str.contains(value)]
+          elif key == 'type':
+              result = result[result['학제'] == value]
+          elif key == 'make':
+              result = result[result['설립구분'] == value]
+          elif key == 'name':
+              result = result[result['학교명'].str.contains(value)]
+  table = Element('table')
+  result['학교명'] = result['학교명'].apply(lambda x: f'<a href="info.html?name={x}">{x}</a>')
+  table.write(result[list(result.columns[:5])+['남은 장학금']].sort_values(by="남은 장학금",ascending=False).to_html(escape=False, index=False))
+</py-script>
+
+  </div>
+</body>
+</html>

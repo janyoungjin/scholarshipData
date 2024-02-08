@@ -1,0 +1,54 @@
+<html>
+<head>
+  <title>대한민국 대학교 리스트</title>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <link rel="stylesheet" href="style.css?after" />
+  <py-env>
+    - pandas
+    - matplotlib
+    - seaborn
+  </py-env>
+</head>
+
+<body>
+    <center>
+    <div id="plot" style="margin-left: auto;margin-right: auto;" ></div>
+    <py-script output="plot">
+    from pyodide.http import open_url
+    import pandas as pd
+    from urllib.parse import parse_qs
+    from js import window
+    import matplotlib.pyplot as plt
+
+    # 데이터 로드
+    data = pd.read_csv(open_url('https://raw.githubusercontent.com/janyoungjin/scholarshipData/main/result.csv'))
+    plt.rcParams['axes.unicode_minus'] = False
+
+    # 쿼리 스트링 파싱
+    query_string = window.location.search
+    type = ""
+    x = ""
+    y = ""
+    size = ""
+
+    if query_string:
+        parsed_qs = parse_qs(query_string.lstrip('?'))
+        for key, values in parsed_qs.items():
+            value = values[0]
+            if key == 'type':
+                type = value
+            elif key == 'x':
+                x = value
+            elif key == 'y':
+                y = value
+            elif key == 'size':
+                size = value
+    fig, ax = plt.subplots()
+    if type == "scatter":
+        ax.scatter(x=data[x], y=data[y])
+    fig
+</py-script></center>
+
+</body>
+</html>
