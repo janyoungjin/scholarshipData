@@ -1,1 +1,0 @@
-https://raw.githubusercontent.com/janyoungjin/scholarshipData/main/result.csv
